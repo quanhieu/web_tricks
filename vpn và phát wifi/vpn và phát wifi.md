@@ -449,6 +449,6 @@ sudo ./WifiWithVpn.sh # chỉ cần chạy 1 lần.
 sudo ip rule add pref 600 iif wlan0 lookup tun0 # cần chạy lại mỗi lần kết nối vpn mới.
 ```
 
-[Link code](https://gist.github.com/NguyenKhong/00e360b513aa1efc037acfc72b9f14db/raw/3c2ea00b752a33f3dc7b5860df581cc40eac4eab/WifiWithVpn.sh)
+[Link code](https://gist.github.com/NguyenKhong/00e360b513aa1efc037acfc72b9f14db/raw/e7f0e8f629e672e25581c8bd5df89802321e8158/WifiWithVpn.sh)
 
 ## HẾT.
