@@ -27,7 +27,7 @@ Trong điện thoại android thì mạng wifi sẽ được card mạng **wlan0
 
 Do vậy để wifi của chúng ta dùng được vpn thì chúng ta phải định tuyến lại gói chỉ cho chúng đến **wlan0** và **tun0** thôi không cho gói tin đi thẳng từ **wlan0** đến **rmnet_data0** nữa.
 
-#### Điều tra, phân tích
+### Điều tra, phân tích
 Công cụ:
 - Một chiếc android 5 đã root
 - Ứng dụng Termux
@@ -218,7 +218,7 @@ Nhìn lại các quy tắc trong ip rule tôi thấy có quy tắc 14000 (trư�
 
 Kết quả vẫn thất bại. Tôi nghĩ quái lạ. Tôi lại thử xóa và thêm, mãi đến sau quy tắc 17000 thì lạ thay nó lại thành công.
 
-##### Tôi đã hiểu vấn đề
+#### Tôi đã hiểu vấn đề
 Trong lúc viết bài này tôi lại tra google và kì lạ thay tôi tìm được hàm [modifyIncomingPacketMark](https://cs.android.com/android/platform/superproject/+/master:system/netd/server/RouteController.cpp;drc=76d2011257d611cd25025377aa5a00cc117cc580;bpv=1;bpt=1;l=480?gsn=modifyIncomingPacketMark&gs=kythe%3A%2F%2Fandroid.googlesource.com%2Fplatform%2Fsuperproject%3Flang%3Dc%252B%252B%3Fpath%3Dsystem%2Fnetd%2Fserver%2FRouteController.cpp%236mgs6-gYdvYUqV0AhEFSeZz5OMy0I5uXWBcZ3EMJH6A&gs=kythe%3A%2F%2Fandroid.googlesource.com%2Fplatform%2Fsuperproject%3Flang%3Dc%252B%252B%3Fpath%3Dsystem%2Fnetd%2Fserver%2FRouteController.h%23RDMxusiuZcmgZJz7Q3mWpUjIC7a9o8T0avm2YM84cjU) trong **RouteController.cpp**
 
 ```
@@ -282,7 +282,7 @@ bit số 17 và 18 đều là 1 tức **protectedFromVpn** và **explicitlySelec
 
 Vậy khi gói tin đi vào wlan0 nó đã bị đánh bả à nhầm đánh bit **protectedFromVpn** và **explicitlySelected/local_network** nên theo quy tắc 12000 có độ ưu tiên lớn hơn 17000 nên nó bị định tuyến vào tun0. 
 
-#### Tổng hợp và giải thích.
+### Tổng hợp và giải thích.
 Một ứng dụng trong android sẽ luôn có 1 **uid** khác nhau. Khi ứng dụng sử dụng mạng thì gói tin sẽ bị dánh dấu bit **protectedFromVpn** và **explicitlySelected/local_network**. 
 
 Khi vpn được khởi tạo nó sẽ tạo một vài quy tắc định tuyến và quy tắc iptables để chuyển gói tin từ ứng dụng tới vpn. Tùy thuộc vào bit nào được bật, quy tắc của ip rule sẽ được áp dụng cho gói tin đó sẽ đi đâu về đâu. Một vài quy tắc điển hình là:
@@ -316,7 +316,7 @@ default via 11.103.54.126 dev rmnet_data0 proto static
 
 Sau đây chúng ta sẽ đi giải quyết từng vấn đề một, để máy tính kết nối vào wifi và liên kết được với vpn trên điện thoại.
 
-##### Vấn đề về cấp phát IP.
+#### Vấn đề về cấp phát IP.
  Khi cấp máy tính kết nối đến wifi điện thoại thành công thì nó sẽ yêu cầu 1 địa chỉ IP cho máy tính này, giao thức đảm nhận là dhcp. Luồng hoạt động như sau:
 
 Gói tin dhcp từ máy tính -> card mạng wlan0 (in wlan0) -> định tuyến (routing) -> dịch vụ dnsmasq, xử lý và trả lại gói tin dhcp chứa IP mới -> định tuyến -> tun0.
@@ -328,7 +328,7 @@ Giải pháp là nâng độ ưu tiên của quy tắc chứa bit **explicitlySe
 #ip rule add pref 500 fwmark 0x0/0x10000 lookup local_network
 ```
 
-##### Vấn đề với gói tin TCP, HTTP.
+#### Vấn đề với gói tin TCP, HTTP.
 
 Ta có luồng hoạt động như sau:
 
@@ -407,7 +407,7 @@ $sudo ip rule
 32000:	from all unreachable
 ```
 
-##### Phân giải tên miền.
+#### Phân giải tên miền.
 
 Theo mặc định, dnsmasq sẽ phân giải tên miền dùng server được cài mặc định trong máy điện thoại do mạng 4G cấp. Để thấy rõ điều này ta dùng lệnh: getprop
 
