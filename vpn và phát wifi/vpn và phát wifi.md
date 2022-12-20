@@ -49,7 +49,7 @@ Hình dưới biểu diễn mối liên hệ giữa các bảng (table) và chai
 Theo kinh nghiệm dùng linux hơi lâu của tôi thì để chuyển tiếp gói tin giữa 2 thằng wlan0 và tun0 thì phải xem bảng **filter** và chain **FORWARD** xem thử có quy tắc nào cho phép chuyển tiếp gói tin chưa.
 
 ```
-#/system/bin/iptables -t mangle -S
+#/system/bin/iptables -t filter -S
 1. -P INPUT ACCEPT
 2. -P FORWARD ACCEPT
 3. -P OUTPUT ACCEPT
@@ -162,7 +162,7 @@ Từ tất cả các gói tin bị đánh dấu 0x0/0x20000 có uid từ 0 -> 99
 
 ```
 #ip route show table tun0
-default dev tun0  proto static scope link 
+default dev tun0 proto static scope link 
 ```
 
 Giải thích cho dòng trên là: mặc định cho phép tất cả gói tin đi ra bên ngoài qua thiết bị (device) tun0. Tức là cho ra internet đó.
@@ -207,13 +207,13 @@ Nhưng nhìn kĩ thì vẫn còn thiếu fwmark 0x0/0x20000,... chúng ở đâu
 Để kiểm chứng tôi xóa quy tắc 12000 thứ 2 cái có fwmark 0x0/0x20000 với lệnh sau thì IP đã được cấp trở lại.
 
 ```
-#ip rule del perf  12000 fwmark 0x0/0x20000 uidrange 0-99999 lookup tun0
+#ip rule del perf 12000 fwmark 0x0/0x20000 uidrange 0-99999 lookup tun0
 ```
 
 Nhìn lại các quy tắc trong ip rule tôi thấy có quy tắc 14000 (trước cái 15000) có chiều đi ra wlan0 (oof-out interface) thì nghĩ đây có lẽ là nơi gói tin dhcp được gửi về máy tính tôi khi xử lý xong. Tôi thử thêm lại quy tắc 12000 vào thử bằng lệnh sau:
 
 ```
-#ip rule add perf  14001 fwmark 0x0/0x20000 uidrange 0-99999 lookup tun0
+#ip rule add perf 14001 fwmark 0x0/0x20000 uidrange 0-99999 lookup tun0
 ```
 
 Kết quả vẫn thất bại. Tôi nghĩ quái lạ. Tôi lại thử xóa và thêm, mãi đến sau quy tắc 17000 thì lạ thay nó lại thành công.
